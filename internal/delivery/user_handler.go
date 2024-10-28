@@ -3,7 +3,7 @@ package delivery
 import (
 	"net/http"
 
-	"github.com/Ateto1204/swep-user-serv/server/internal/usecase"
+	"github.com/Ateto1204/swep-user-serv/internal/usecase"
 	"github.com/gin-gonic/gin"
 )
 
@@ -50,5 +50,5 @@ func (h *UserHandler) GetUser(c *gin.Context) {
 }
 
 func (h *UserHandler) Handle(c *gin.Context) {
-
+	c.JSON(http.StatusOK, "hello zeabur")
 }

@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"github.com/Ateto1204/swep-user-serv/server/entity"
+	"github.com/Ateto1204/swep-user-serv/entity"
 	"gorm.io/gorm"
 )
 

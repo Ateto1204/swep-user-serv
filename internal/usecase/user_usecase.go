@@ -3,8 +3,8 @@ package usecase
 import (
 	"time"
 
-	"github.com/Ateto1204/swep-user-serv/server/entity"
-	"github.com/Ateto1204/swep-user-serv/server/internal/repository"
+	"github.com/Ateto1204/swep-user-serv/entity"
+	"github.com/Ateto1204/swep-user-serv/internal/repository"
 )
 
 type UserUseCase interface {
