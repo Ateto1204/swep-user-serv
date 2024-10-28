@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/Ateto1204/swep-user-serv/server/internal/infrastructure"
-	"github.com/Ateto1204/swep-user-serv/server/internal/repository"
-	"github.com/Ateto1204/swep-user-serv/server/internal/usecase"
+	"github.com/Ateto1204/swep-user-serv/internal/infrastructure"
+	"github.com/Ateto1204/swep-user-serv/internal/repository"
+	"github.com/Ateto1204/swep-user-serv/internal/usecase"
 	"github.com/joho/godotenv"
 )
 

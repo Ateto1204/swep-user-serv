@@ -1,8 +1,8 @@
 package infrastructure
 
 import (
-	"github.com/Ateto1204/swep-user-serv/server/internal/delivery"
-	"github.com/Ateto1204/swep-user-serv/server/internal/usecase"
+	"github.com/Ateto1204/swep-user-serv/internal/delivery"
+	"github.com/Ateto1204/swep-user-serv/internal/usecase"
 	"github.com/gin-gonic/gin"
 )
 
