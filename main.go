@@ -1,6 +1,8 @@
 package main
 
 import (
+	"log"
+
 	"github.com/Ateto1204/swep-user-serv/internal/infrastructure"
 	"github.com/Ateto1204/swep-user-serv/internal/repository"
 	"github.com/Ateto1204/swep-user-serv/internal/usecase"
@@ -20,5 +22,6 @@ func main() {
 	go userUseCase.Run()
 
 	router := infrastructure.NewRouter(userUseCase)
-	router.Run(":8002")
+	log.Println("Server Start:")
+	router.Run(":8080")
 }
