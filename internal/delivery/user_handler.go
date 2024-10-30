@@ -25,11 +25,12 @@ func (h *UserHandler) SaveUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	if err := h.userUseCase.SaveUser(input.ID, input.Name); err != nil {
+	user, err := h.userUseCase.SaveUser(input.ID, input.Name)
+	if err != nil {
 		c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, input)
+	c.JSON(http.StatusOK, user)
 }
 
 func (h *UserHandler) GetUser(c *gin.Context) {

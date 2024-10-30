@@ -6,11 +6,9 @@ import (
 	"github.com/Ateto1204/swep-user-serv/internal/infrastructure"
 	"github.com/Ateto1204/swep-user-serv/internal/repository"
 	"github.com/Ateto1204/swep-user-serv/internal/usecase"
-	"github.com/joho/godotenv"
 )
 
 func main() {
-	godotenv.Load()
 	db, err := infrastructure.NewDatabase()
 	if err != nil {
 		panic(err)
@@ -18,8 +16,6 @@ func main() {
 
 	repo := repository.NewUserRepository(db)
 	userUseCase := usecase.NewUserUseCase(repo)
-
-	go userUseCase.Run()
 
 	router := infrastructure.NewRouter(userUseCase)
 	log.Println("Server Start:")

@@ -17,7 +17,7 @@ func NewRouter(chatUseCase usecase.UserUseCase) *gin.Engine {
 
 	router.GET("/", userHandler.Handle)
 	router.POST("/api/user", userHandler.SaveUser)
-	router.POST("api/user/id", userHandler.GetUser)
+	router.POST("/api/user/id", userHandler.GetUser)
 
 	return router
 }
