@@ -1,28 +1,28 @@
 package infrastructure
 
 import (
-	"fmt"
+	"log"
 	"os"
 
 	"github.com/Ateto1204/swep-user-serv/entity"
-	"gorm.io/driver/mysql"
+	"github.com/joho/godotenv"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 func NewDatabase() (*gorm.DB, error) {
-	dsn := fmt.Sprintf(
-		"%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		os.Getenv("MYSQL_USERNAME"),
-		os.Getenv("MYSQL_PASSWORD"),
-		os.Getenv("MYSQL_HOST"),
-		os.Getenv("MYSQL_PORT"),
-		os.Getenv("MYSQL_DATABASE"),
-	)
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	godotenv.Load()
+	dsn := os.Getenv("POSTGRESQL_CONNECTION")
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}
 
-	db.AutoMigrate(&entity.User{})
+	if err := db.AutoMigrate(&entity.User{}); err != nil {
+		log.Fatalf("AutoMigrate failed: %v", err)
+		return nil, err
+	} else {
+		log.Println("Migrated database successfully")
+	}
 	return db, nil
 }
