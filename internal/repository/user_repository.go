@@ -12,6 +12,7 @@ import (
 type UserRepository interface {
 	Save(userID, name string, t time.Time) (*entity.User, error)
 	GetByID(id string) (*domain.User, error)
+	AddNewFriend(user *domain.User) (*domain.User, error)
 }
 
 type userRepository struct {
@@ -39,8 +40,7 @@ func (r *userRepository) Save(userID, name string, t time.Time) (*entity.User, e
 
 func (r *userRepository) GetByID(userID string) (*domain.User, error) {
 	var userEntity entity.User
-	err := r.db.Where("id = ?", userID).Order("id").First(&userEntity).Error
-	if err != nil {
+	if err := r.db.Where("id = ?", userID).Order("id").First(&userEntity).Error; err != nil {
 		return nil, err
 	}
 	chatsData, err := strUnserialize(userEntity.Chats)
@@ -61,13 +61,30 @@ func (r *userRepository) GetByID(userID string) (*domain.User, error) {
 	return userModel, err
 }
 
-// func strSerialize(sa []string) (string, error) {
-// 	s, err := json.Marshal(sa)
-// 	if err != nil {
-// 		return "", err
-// 	}
-// 	return string(s), nil
-// }
+func (r *userRepository) AddNewFriend(user *domain.User) (*domain.User, error) {
+	friendsData, err := strSerialize(user.Friends)
+	if err != nil {
+		return nil, err
+	}
+	userEntity := &entity.User{
+		ID:       user.ID,
+		Name:     user.Name,
+		Friends:  friendsData,
+		CreateAt: user.CreateAt,
+	}
+	if err := r.db.Model(userEntity).Update("Friends", friendsData).Error; err != nil {
+		return nil, err
+	}
+	return r.GetByID(user.ID)
+}
+
+func strSerialize(sa []string) (string, error) {
+	s, err := json.Marshal(sa)
+	if err != nil {
+		return "", err
+	}
+	return string(s), nil
+}
 
 func strUnserialize(s string) ([]string, error) {
 	var sa []string
