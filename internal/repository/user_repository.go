@@ -12,7 +12,7 @@ import (
 type UserRepository interface {
 	Save(userID, name string, t time.Time) (*entity.User, error)
 	GetByID(id string) (*domain.User, error)
-	AddNewFriend(user *domain.User) (*domain.User, error)
+	UpdFriends(user *domain.User) (*domain.User, error)
 }
 
 type userRepository struct {
@@ -61,7 +61,7 @@ func (r *userRepository) GetByID(userID string) (*domain.User, error) {
 	return userModel, err
 }
 
-func (r *userRepository) AddNewFriend(user *domain.User) (*domain.User, error) {
+func (r *userRepository) UpdFriends(user *domain.User) (*domain.User, error) {
 	friendsData, err := strSerialize(user.Friends)
 	if err != nil {
 		return nil, err
