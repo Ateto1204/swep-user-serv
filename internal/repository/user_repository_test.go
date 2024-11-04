@@ -15,13 +15,11 @@ import (
 var testDB *gorm.DB
 
 func setupTestDB() {
-	// 使用 SQLite 內存資料庫進行測試，避免與生產資料庫衝突
 	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect to test database")
 	}
 
-	// 自動建立資料表，確保測試表結構一致
 	db.AutoMigrate(&entity.User{})
 	testDB = db
 }
