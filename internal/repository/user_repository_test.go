@@ -15,13 +15,11 @@ import (
 var testDB *gorm.DB
 
 func setupTestDB() {
-	// 使用 SQLite 內存資料庫進行測試，避免與生產資料庫衝突
 	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect to test database")
 	}
 
-	// 自動建立資料表，確保測試表結構一致
 	db.AutoMigrate(&entity.User{})
 	testDB = db
 }
@@ -78,10 +76,33 @@ func TestUpdFriends(t *testing.T) {
 		Friends:  []string{"friend1", "friend2"},
 		CreateAt: user.CreateAt,
 	}
-	updatedUser, err := repo.UpdFriends(userModel)
+	updatedUser, err := repo.UpdByID("Friends", userModel)
 	assert.NoError(t, err)
 	assert.NotNil(t, updatedUser)
 	assert.Equal(t, userID, updatedUser.ID)
 	assert.Equal(t, name, updatedUser.Name)
 	assert.Equal(t, []string{"friend1", "friend2"}, updatedUser.Friends)
+}
+
+func TestUpdChats(t *testing.T) {
+	setupTestDB()
+	repo := repository.NewUserRepository(testDB)
+
+	userID := "user123"
+	name := "Test User"
+	now := time.Now()
+	user, _ := repo.Save(userID, name, now)
+
+	userModel := &domain.User{
+		ID:       user.ID,
+		Name:     user.Name,
+		Chats:    []string{"chat1", "chat2"},
+		CreateAt: user.CreateAt,
+	}
+	updatedUser, err := repo.UpdByID("Chats", userModel)
+	assert.NoError(t, err)
+	assert.NotNil(t, updatedUser)
+	assert.Equal(t, userID, updatedUser.ID)
+	assert.Equal(t, name, updatedUser.Name)
+	assert.Equal(t, []string{"chat1", "chat2"}, updatedUser.Chats)
 }
