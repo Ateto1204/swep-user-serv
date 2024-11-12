@@ -76,7 +76,7 @@ func TestUpdFriends(t *testing.T) {
 		Friends:  []string{"friend1", "friend2"},
 		CreateAt: user.CreateAt,
 	}
-	updatedUser, err := repo.UpdFriends(userModel)
+	updatedUser, err := repo.UpdByID("Friends", userModel)
 	assert.NoError(t, err)
 	assert.NotNil(t, updatedUser)
 	assert.Equal(t, userID, updatedUser.ID)
