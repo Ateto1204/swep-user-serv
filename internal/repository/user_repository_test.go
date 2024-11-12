@@ -83,3 +83,26 @@ func TestUpdFriends(t *testing.T) {
 	assert.Equal(t, name, updatedUser.Name)
 	assert.Equal(t, []string{"friend1", "friend2"}, updatedUser.Friends)
 }
+
+func TestUpdChats(t *testing.T) {
+	setupTestDB()
+	repo := repository.NewUserRepository(testDB)
+
+	userID := "user123"
+	name := "Test User"
+	now := time.Now()
+	user, _ := repo.Save(userID, name, now)
+
+	userModel := &domain.User{
+		ID:       user.ID,
+		Name:     user.Name,
+		Chats:    []string{"chat1", "chat2"},
+		CreateAt: user.CreateAt,
+	}
+	updatedUser, err := repo.UpdByID("Chats", userModel)
+	assert.NoError(t, err)
+	assert.NotNil(t, updatedUser)
+	assert.Equal(t, userID, updatedUser.ID)
+	assert.Equal(t, name, updatedUser.Name)
+	assert.Equal(t, []string{"chat1", "chat2"}, updatedUser.Chats)
+}
