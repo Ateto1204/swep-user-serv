@@ -14,6 +14,7 @@ type UserUseCase interface {
 	SaveUser(id, name string) (*entity.User, error)
 	GetUser(id string) (*domain.User, error)
 	AddNewChat(userID, chatID string) (*domain.User, error)
+	RemoveChat(userID, chatID string) (*domain.User, error)
 	AddNewFriend(userID, friendID string) (*domain.User, error)
 	RemoveFriend(userID, friendID string) (*domain.User, error)
 }
@@ -58,6 +59,25 @@ func (uc *userUseCase) AddNewChat(userID, chatID string) (*domain.User, error) {
 	}
 	user.Chats = append(user.Chats, chatID)
 
+	return uc.repository.UpdByID("Chats", user)
+}
+
+func (uc *userUseCase) RemoveChat(userID, chatID string) (*domain.User, error) {
+	user, err := uc.repository.GetByID(userID)
+	if user == nil || err != nil {
+		return nil, err
+	}
+	flag := true
+	for _, id := range user.Chats {
+		if id == chatID {
+			flag = false
+			break
+		}
+	}
+	if flag {
+		return nil, fmt.Errorf("user %s doesn't have the chat %s", userID, chatID)
+	}
+	user.Chats = removeFromSlice(user.Chats, chatID)
 	return uc.repository.UpdByID("Chats", user)
 }
 

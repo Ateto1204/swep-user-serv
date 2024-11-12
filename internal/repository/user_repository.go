@@ -41,24 +41,13 @@ func (r *userRepository) Save(userID, name string, t time.Time) (*entity.User, e
 }
 
 func (r *userRepository) GetByID(userID string) (*domain.User, error) {
-	var userEntity entity.User
+	var userEntity *entity.User
 	if err := r.db.Where("id = ?", userID).Order("id").First(&userEntity).Error; err != nil {
 		return nil, err
 	}
-	chatsData, err := strUnserialize(userEntity.Chats)
+	userModel, err := parseToModel(userEntity)
 	if err != nil {
 		return nil, err
-	}
-	friendsData, err := strUnserialize(userEntity.Friends)
-	if err != nil {
-		return nil, err
-	}
-	userModel := &domain.User{
-		ID:       userEntity.ID,
-		Name:     userEntity.Name,
-		Chats:    chatsData,
-		Friends:  friendsData,
-		CreateAt: userEntity.CreateAt,
 	}
 	return userModel, err
 }
