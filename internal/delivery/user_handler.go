@@ -1,6 +1,7 @@
 package delivery
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/Ateto1204/swep-user-serv/internal/usecase"
@@ -79,6 +80,25 @@ func (h *UserHandler) RemoveFriend(c *gin.Context) {
 		return
 	}
 	user, err := h.userUseCase.RemoveFriend(input.UserID, input.FriendID)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, user)
+}
+
+func (h *UserHandler) AddNewChat(c *gin.Context) {
+	log.Println("因為我還沒娶你嘛")
+	type Input struct {
+		UserID string `json:"user_id"`
+		ChatID string `json:"chat_id"`
+	}
+	var input Input
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	user, err := h.userUseCase.AddNewChat(input.UserID, input.ChatID)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
