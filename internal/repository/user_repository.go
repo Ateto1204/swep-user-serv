@@ -2,6 +2,8 @@ package repository
 
 import (
 	"encoding/json"
+	"errors"
+	"reflect"
 	"time"
 
 	"github.com/Ateto1204/swep-user-serv/entity"
@@ -12,7 +14,7 @@ import (
 type UserRepository interface {
 	Save(userID, name string, t time.Time) (*entity.User, error)
 	GetByID(id string) (*domain.User, error)
-	UpdFriends(user *domain.User) (*domain.User, error)
+	UpdByID(field string, user *domain.User) (*domain.User, error)
 }
 
 type userRepository struct {
@@ -39,43 +41,71 @@ func (r *userRepository) Save(userID, name string, t time.Time) (*entity.User, e
 }
 
 func (r *userRepository) GetByID(userID string) (*domain.User, error) {
-	var userEntity entity.User
+	var userEntity *entity.User
 	if err := r.db.Where("id = ?", userID).Order("id").First(&userEntity).Error; err != nil {
 		return nil, err
 	}
-	chatsData, err := strUnserialize(userEntity.Chats)
+	userModel, err := parseToModel(userEntity)
 	if err != nil {
 		return nil, err
-	}
-	friendsData, err := strUnserialize(userEntity.Friends)
-	if err != nil {
-		return nil, err
-	}
-	userModel := &domain.User{
-		ID:       userEntity.ID,
-		Name:     userEntity.Name,
-		Chats:    chatsData,
-		Friends:  friendsData,
-		CreateAt: userEntity.CreateAt,
 	}
 	return userModel, err
 }
 
-func (r *userRepository) UpdFriends(user *domain.User) (*domain.User, error) {
-	friendsData, err := strSerialize(user.Friends)
+func (r *userRepository) UpdByID(field string, user *domain.User) (*domain.User, error) {
+	userEntity, err := parseToEntity(user)
+	if err != nil {
+		return nil, err
+	}
+
+	v := reflect.ValueOf(userEntity).Elem()
+	f := v.FieldByName(field)
+	if !f.IsValid() {
+		return nil, errors.New("specified field does not exist in user entity")
+	}
+
+	if err := r.db.Model(userEntity).Update(field, f.Interface()).Error; err != nil {
+		return nil, err
+	}
+	return r.GetByID(user.ID)
+}
+
+func parseToEntity(user *domain.User) (*entity.User, error) {
+	chatsStr, err := strSerialize(user.Chats)
+	if err != nil {
+		return nil, err
+	}
+	friendsStr, err := strSerialize(user.Friends)
 	if err != nil {
 		return nil, err
 	}
 	userEntity := &entity.User{
 		ID:       user.ID,
 		Name:     user.Name,
+		Chats:    chatsStr,
+		Friends:  friendsStr,
+		CreateAt: user.CreateAt,
+	}
+	return userEntity, nil
+}
+
+func parseToModel(user *entity.User) (*domain.User, error) {
+	chatsData, err := strUnserialize(user.Chats)
+	if err != nil {
+		return nil, err
+	}
+	friendsData, err := strUnserialize(user.Friends)
+	if err != nil {
+		return nil, err
+	}
+	userModel := &domain.User{
+		ID:       user.ID,
+		Name:     user.Name,
+		Chats:    chatsData,
 		Friends:  friendsData,
 		CreateAt: user.CreateAt,
 	}
-	if err := r.db.Model(userEntity).Update("Friends", friendsData).Error; err != nil {
-		return nil, err
-	}
-	return r.GetByID(user.ID)
+	return userModel, nil
 }
 
 func strSerialize(sa []string) (string, error) {

@@ -14,10 +14,12 @@ func NewRouter(chatUseCase usecase.UserUseCase) *gin.Engine {
 	userHandler := delivery.NewUserHandler(chatUseCase)
 
 	router.GET("/", userHandler.Handle)
-	router.POST("/api/user", userHandler.SaveUser)
-	router.POST("/api/user/id", userHandler.GetUser)
-	router.PATCH("api/user/friend/add", userHandler.AddNewFriend)
-	router.PATCH("api/user/friend/remove", userHandler.RemoveFriend)
+	router.POST("/api", userHandler.SaveUser)
+	router.POST("/api/id", userHandler.GetUser)
+	router.PATCH("/api/friend-add", userHandler.AddNewFriend)
+	router.PATCH("/api/friend-remove", userHandler.RemoveFriend)
+	router.PATCH("/api/chat-add", userHandler.AddNewChat)
+	router.PATCH("/api/chat-remove", userHandler.RemoveChat)
 
 	return router
 }
@@ -27,7 +29,7 @@ func corsMiddleware() gin.HandlerFunc {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
-		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, PATCH")
 
 		if c.Request.Method == "OPTIONS" {
 			c.AbortWithStatus(204)

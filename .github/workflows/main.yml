@@ -1,9 +1,7 @@
 name: CI/CD Pipeline
 
 on:
-  push:
-    branches:
-      - main
+  pull_request:
 
 jobs:
   build:
@@ -34,20 +32,3 @@ jobs:
 
       - name: Build project
         run: go build -o myapp
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Deploy to Zeabur
-        env:
-          ZB_PROJECT_ID: ${{ secrets.ZB_PROJECT_ID }}
-          ZB_TOKEN: ${{ secrets.ZB_TOKEN }}
-        run: |
-          curl -X POST "https://api.zeabur.com/v1/projects/${ZB_PROJECT_ID}/deploy" \
-            -H "Authorization: Bearer ${ZB_TOKEN}" \
-            -H "Content-Type: application/json" \
-            -d '{"branch": "main"}'
