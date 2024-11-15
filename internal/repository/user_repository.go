@@ -12,7 +12,7 @@ import (
 )
 
 type UserRepository interface {
-	Save(userID, name string, t time.Time) (*entity.User, error)
+	Save(userID, name string, t time.Time) (*domain.User, error)
 	GetByID(id string) (*domain.User, error)
 	UpdByID(field string, user *domain.User) (*domain.User, error)
 }
@@ -25,19 +25,23 @@ func NewUserRepository(db *gorm.DB) UserRepository {
 	return &userRepository{db}
 }
 
-func (r *userRepository) Save(userID, name string, t time.Time) (*entity.User, error) {
-	user := &entity.User{
-		ID:       userID,
-		Name:     name,
-		Chats:    "[]",
-		Friends:  "[]",
-		CreateAt: t,
-	}
-	err := r.db.Create(user).Error
+func (r *userRepository) Save(userID, name string, t time.Time) (*domain.User, error) {
+	// user := &entity.User{
+	// 	ID:       userID,
+	// 	Name:     name,
+	// 	Chats:    "[]",
+	// 	Friends:  "[]",
+	// 	CreateAt: t,
+	// }
+	userModel := domain.NewUser(userID, name, t)
+	userEntity, err := parseToEntity(userModel)
 	if err != nil {
 		return nil, err
 	}
-	return user, nil
+	if err := r.db.Create(userEntity).Error; err != nil {
+		return nil, err
+	}
+	return userModel, nil
 }
 
 func (r *userRepository) GetByID(userID string) (*domain.User, error) {

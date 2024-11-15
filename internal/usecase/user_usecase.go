@@ -5,13 +5,12 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/Ateto1204/swep-user-serv/entity"
 	"github.com/Ateto1204/swep-user-serv/internal/domain"
 	"github.com/Ateto1204/swep-user-serv/internal/repository"
 )
 
 type UserUseCase interface {
-	SaveUser(id, name string) (*entity.User, error)
+	SaveUser(id, name string) (*domain.User, error)
 	GetUser(id string) (*domain.User, error)
 	AddNewChat(userID, chatID string) (*domain.User, error)
 	RemoveChat(userID, chatID string) (*domain.User, error)
@@ -29,7 +28,7 @@ func NewUserUseCase(repo repository.UserRepository) UserUseCase {
 	}
 }
 
-func (uc *userUseCase) SaveUser(userID, name string) (*entity.User, error) {
+func (uc *userUseCase) SaveUser(userID, name string) (*domain.User, error) {
 	t := time.Now()
 	user, err := uc.repository.Save(userID, name, t)
 	if err != nil {
