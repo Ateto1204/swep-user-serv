@@ -50,6 +50,22 @@ func (h *UserHandler) GetUser(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
+func (h *UserHandler) DeleteUser(c *gin.Context) {
+	type Input struct {
+		ID string `json:"id"`
+	}
+	var input Input
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if err := h.userUseCase.DeleteUser(input.ID); err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "delete user successfully"})
+}
+
 func (h *UserHandler) AddNewFriend(c *gin.Context) {
 	type Input struct {
 		UserID   string `json:"user_id"`

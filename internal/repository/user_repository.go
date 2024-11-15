@@ -3,6 +3,7 @@ package repository
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"reflect"
 	"time"
 
@@ -15,6 +16,7 @@ type UserRepository interface {
 	Save(userID, name string, t time.Time) (*entity.User, error)
 	GetByID(id string) (*domain.User, error)
 	UpdByID(field string, user *domain.User) (*domain.User, error)
+	DeleteByID(userID string) error
 }
 
 type userRepository struct {
@@ -68,6 +70,19 @@ func (r *userRepository) UpdByID(field string, user *domain.User) (*domain.User,
 		return nil, err
 	}
 	return r.GetByID(user.ID)
+}
+
+func (r *userRepository) DeleteByID(userID string) error {
+	result := r.db.Where("id = ?", userID).Delete(&entity.User{})
+	if result.Error != nil {
+		return fmt.Errorf("error occur when deleting the user: %w", result.Error)
+	}
+
+	if result.RowsAffected == 0 {
+		return fmt.Errorf("user %s was not found", userID)
+	}
+
+	return nil
 }
 
 func parseToEntity(user *domain.User) (*entity.User, error) {

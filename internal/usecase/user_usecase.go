@@ -3,6 +3,7 @@ package usecase
 import (
 	"errors"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/Ateto1204/swep-user-serv/entity"
@@ -11,8 +12,9 @@ import (
 )
 
 type UserUseCase interface {
-	SaveUser(id, name string) (*entity.User, error)
-	GetUser(id string) (*domain.User, error)
+	SaveUser(userID, name string) (*entity.User, error)
+	GetUser(userID string) (*domain.User, error)
+	DeleteUser(userID string) error
 	AddNewChat(userID, chatID string) (*domain.User, error)
 	RemoveChat(userID, chatID string) (*domain.User, error)
 	AddNewFriend(userID, friendID string) (*domain.User, error)
@@ -44,6 +46,18 @@ func (uc *userUseCase) GetUser(userID string) (*domain.User, error) {
 		return nil, err
 	}
 	return user, nil
+}
+
+func (uc *userUseCase) DeleteUser(userID string) error {
+	if _, err := uc.repository.GetByID(userID); err != nil {
+		return err
+	}
+	if err := uc.repository.DeleteByID(userID); err != nil {
+		return err
+	}
+	t := time.Now()
+	log.Printf("delete user %s at %v", userID, t)
+	return nil
 }
 
 func (uc *userUseCase) AddNewChat(userID, chatID string) (*domain.User, error) {
