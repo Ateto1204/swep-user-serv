@@ -36,8 +36,8 @@ func TestSave(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, userID, user.ID)
 	assert.Equal(t, name, user.Name)
-	assert.Equal(t, "[]", user.Chats)
-	assert.Equal(t, "[]", user.Friends)
+	assert.Equal(t, []string{}, user.Chats)
+	assert.Equal(t, []string{}, user.Friends)
 	assert.Equal(t, now, user.CreateAt)
 }
 
@@ -105,4 +105,20 @@ func TestUpdChats(t *testing.T) {
 	assert.Equal(t, userID, updatedUser.ID)
 	assert.Equal(t, name, updatedUser.Name)
 	assert.Equal(t, []string{"chat1", "chat2"}, updatedUser.Chats)
+}
+
+func TestDeleteByID(t *testing.T) {
+	setupTestDB()
+	repo := repository.NewUserRepository(testDB)
+
+	userID := "user123"
+	name := "Test User"
+	now := time.Now()
+	user, _ := repo.Save(userID, name, now)
+
+	err := repo.DeleteByID(user.ID)
+	assert.NoError(t, err)
+
+	_, err = repo.GetByID(user.ID)
+	assert.NotNil(t, err)
 }
