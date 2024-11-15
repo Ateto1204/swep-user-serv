@@ -9,3 +9,13 @@ type User struct {
 	Friends  []string  `json:"friends"` // []User.ID
 	CreateAt time.Time `json:"create_at"`
 }
+
+func NewUser(ID, name string, t time.Time) *User {
+	return &User{
+		ID:       ID,
+		Name:     name,
+		Chats:    []string{},
+		Friends:  []string{},
+		CreateAt: t,
+	}
+}

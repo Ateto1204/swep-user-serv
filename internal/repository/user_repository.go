@@ -3,6 +3,7 @@ package repository
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"reflect"
 	"time"
 
@@ -12,9 +13,10 @@ import (
 )
 
 type UserRepository interface {
-	Save(userID, name string, t time.Time) (*entity.User, error)
+	Save(userID, name string, t time.Time) (*domain.User, error)
 	GetByID(id string) (*domain.User, error)
 	UpdByID(field string, user *domain.User) (*domain.User, error)
+	DeleteByID(userID string) error
 }
 
 type userRepository struct {
@@ -25,19 +27,23 @@ func NewUserRepository(db *gorm.DB) UserRepository {
 	return &userRepository{db}
 }
 
-func (r *userRepository) Save(userID, name string, t time.Time) (*entity.User, error) {
-	user := &entity.User{
-		ID:       userID,
-		Name:     name,
-		Chats:    "[]",
-		Friends:  "[]",
-		CreateAt: t,
-	}
-	err := r.db.Create(user).Error
+func (r *userRepository) Save(userID, name string, t time.Time) (*domain.User, error) {
+	// user := &entity.User{
+	// 	ID:       userID,
+	// 	Name:     name,
+	// 	Chats:    "[]",
+	// 	Friends:  "[]",
+	// 	CreateAt: t,
+	// }
+	userModel := domain.NewUser(userID, name, t)
+	userEntity, err := parseToEntity(userModel)
 	if err != nil {
 		return nil, err
 	}
-	return user, nil
+	if err := r.db.Create(userEntity).Error; err != nil {
+		return nil, err
+	}
+	return userModel, nil
 }
 
 func (r *userRepository) GetByID(userID string) (*domain.User, error) {
@@ -68,6 +74,19 @@ func (r *userRepository) UpdByID(field string, user *domain.User) (*domain.User,
 		return nil, err
 	}
 	return r.GetByID(user.ID)
+}
+
+func (r *userRepository) DeleteByID(userID string) error {
+	result := r.db.Where("id = ?", userID).Delete(&entity.User{})
+	if result.Error != nil {
+		return fmt.Errorf("error occur when deleting the user: %w", result.Error)
+	}
+
+	if result.RowsAffected == 0 {
+		return fmt.Errorf("user %s was not found", userID)
+	}
+
+	return nil
 }
 
 func parseToEntity(user *domain.User) (*entity.User, error) {
