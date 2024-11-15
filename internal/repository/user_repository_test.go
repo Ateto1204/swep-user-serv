@@ -36,8 +36,8 @@ func TestSave(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, userID, user.ID)
 	assert.Equal(t, name, user.Name)
-	assert.Equal(t, "[]", user.Chats)
-	assert.Equal(t, "[]", user.Friends)
+	assert.Equal(t, []string{}, user.Chats)
+	assert.Equal(t, []string{}, user.Friends)
 	assert.Equal(t, now, user.CreateAt)
 }
 
