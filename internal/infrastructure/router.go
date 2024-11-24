@@ -16,11 +16,16 @@ func NewRouter(chatUseCase usecase.UserUseCase) *gin.Engine {
 	router.GET("/", userHandler.Handle)
 	router.POST("/api/user-add", userHandler.SaveUser)
 	router.POST("/api/user-get", userHandler.GetUser)
-  router.DELETE("/api/user-del", userHandler.DeleteUser)
+	router.DELETE("/api/user-del", userHandler.DeleteUser)
+
 	router.PATCH("/api/friend-add", userHandler.AddNewFriend)
 	router.PATCH("/api/friend-remove", userHandler.RemoveFriend)
+
 	router.PATCH("/api/chat-add", userHandler.AddNewChat)
 	router.PATCH("/api/chat-remove", userHandler.RemoveChat)
+
+	router.PATCH("/api/notif-add", userHandler.AddNewNotif)
+	router.PATCH("/api/notif-remove", userHandler.RemoveNotif)
 
 	return router
 }
