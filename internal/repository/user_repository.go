@@ -28,13 +28,6 @@ func NewUserRepository(db *gorm.DB) UserRepository {
 }
 
 func (r *userRepository) Save(userID, name string, t time.Time) (*domain.User, error) {
-	// user := &entity.User{
-	// 	ID:       userID,
-	// 	Name:     name,
-	// 	Chats:    "[]",
-	// 	Friends:  "[]",
-	// 	CreateAt: t,
-	// }
 	userModel := domain.NewUser(userID, name, t)
 	userEntity, err := parseToEntity(userModel)
 	if err != nil {
@@ -53,7 +46,13 @@ func (r *userRepository) GetByID(userID string) (*domain.User, error) {
 	}
 	userModel, err := parseToModel(userEntity)
 	if err != nil {
-		return nil, err
+		userEntity.Notifs = "[]"
+		userModel, err = parseToModel(userEntity)
+		if err != nil {
+			return nil, err
+		}
+		field := "Notifs"
+		return r.UpdByID(field, userModel)
 	}
 	return userModel, err
 }
@@ -98,11 +97,16 @@ func parseToEntity(user *domain.User) (*entity.User, error) {
 	if err != nil {
 		return nil, err
 	}
+	notifsStr, err := strSerialize(user.Notifs)
+	if err != nil {
+		return nil, err
+	}
 	userEntity := &entity.User{
 		ID:       user.ID,
 		Name:     user.Name,
 		Chats:    chatsStr,
 		Friends:  friendsStr,
+		Notifs:   notifsStr,
 		CreateAt: user.CreateAt,
 	}
 	return userEntity, nil
@@ -117,11 +121,16 @@ func parseToModel(user *entity.User) (*domain.User, error) {
 	if err != nil {
 		return nil, err
 	}
+	notifsData, err := strUnserialize(user.Notifs)
+	if err != nil {
+		return nil, err
+	}
 	userModel := &domain.User{
 		ID:       user.ID,
 		Name:     user.Name,
 		Chats:    chatsData,
 		Friends:  friendsData,
+		Notifs:   notifsData,
 		CreateAt: user.CreateAt,
 	}
 	return userModel, nil

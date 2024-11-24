@@ -138,6 +138,42 @@ func (h *UserHandler) RemoveChat(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
+func (h *UserHandler) AddNewNotif(c *gin.Context) {
+	type Input struct {
+		UserID  string `json:"user_id"`
+		NotifID string `json:"notif_id"`
+	}
+	var input Input
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	user, err := h.userUseCase.AddNewNotif(input.UserID, input.NotifID)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, user)
+}
+
+func (h *UserHandler) RemoveNotif(c *gin.Context) {
+	type Input struct {
+		UserID  string `json:"user_id"`
+		NotifID string `json:"notif_id"`
+	}
+	var input Input
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	user, err := h.userUseCase.RemoveNotif(input.UserID, input.NotifID)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, user)
+}
+
 func (h *UserHandler) Handle(c *gin.Context) {
 	c.JSON(http.StatusOK, "hello zeabur")
 }
