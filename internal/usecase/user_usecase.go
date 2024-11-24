@@ -13,11 +13,13 @@ import (
 type UserUseCase interface {
 	SaveUser(id, name string) (*domain.User, error)
 	GetUser(id string) (*domain.User, error)
-  DeleteUser(userID string) error
+	DeleteUser(userID string) error
 	AddNewChat(userID, chatID string) (*domain.User, error)
 	RemoveChat(userID, chatID string) (*domain.User, error)
 	AddNewFriend(userID, friendID string) (*domain.User, error)
 	RemoveFriend(userID, friendID string) (*domain.User, error)
+	AddNewNotif(userID, notifID string) (*domain.User, error)
+	RemoveNotif(userID, notifID string) (*domain.User, error)
 }
 
 type userUseCase struct {
@@ -198,6 +200,30 @@ func (uc *userUseCase) RemoveFriend(userID, friendID string) (*domain.User, erro
 	}
 
 	return uc.repository.UpdByID("Friends", user)
+}
+
+func (uc *userUseCase) AddNewNotif(userID, notifID string) (*domain.User, error) {
+	user, err := uc.repository.GetByID(userID)
+	if user == nil || err != nil {
+		return nil, err
+	}
+
+	user.Notifs = append(user.Notifs, notifID)
+	field := "Notifs"
+	user, err = uc.repository.UpdByID(field, user)
+	return user, err
+}
+
+func (uc *userUseCase) RemoveNotif(userID, notifID string) (*domain.User, error) {
+	user, err := uc.repository.GetByID(userID)
+	if user == nil || err != nil {
+		return nil, err
+	}
+
+	user.Notifs = removeFromSlice(user.Notifs, notifID)
+	field := "Notifs"
+	user, err = uc.repository.UpdByID(field, user)
+	return user, err
 }
 
 func removeFromSlice(slice []string, target string) []string {
