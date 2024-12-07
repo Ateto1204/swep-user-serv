@@ -122,3 +122,22 @@ func TestDeleteByID(t *testing.T) {
 	_, err = repo.GetByID(user.ID)
 	assert.NotNil(t, err)
 }
+
+func TestUpdProfileUrl(t *testing.T) {
+	setupTestDB()
+	repo := repository.NewUserRepository(testDB)
+
+	userID := "user123"
+	name := "Test User"
+	now := time.Now()
+	user, _ := repo.Save(userID, name, now)
+
+	profileUrl := "example@gmail.com"
+	field := "Profile"
+	user.Profile = profileUrl
+	updatedUser, err := repo.UpdByID(field, user)
+
+	assert.NoError(t, err)
+	assert.NotNil(t, updatedUser)
+	assert.Equal(t, profileUrl, updatedUser.Profile)
+}

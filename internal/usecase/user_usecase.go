@@ -20,6 +20,7 @@ type UserUseCase interface {
 	RemoveFriend(userID, friendID string) (*domain.User, error)
 	AddNewNotif(userID, notifID string) (*domain.User, error)
 	RemoveNotif(userID, notifID string) (*domain.User, error)
+	UpdProfileUrl(userID, profileUrl string) (*domain.User, error)
 }
 
 type userUseCase struct {
@@ -222,6 +223,18 @@ func (uc *userUseCase) RemoveNotif(userID, notifID string) (*domain.User, error)
 
 	user.Notifs = removeFromSlice(user.Notifs, notifID)
 	field := "Notifs"
+	user, err = uc.repository.UpdByID(field, user)
+	return user, err
+}
+
+func (uc *userUseCase) UpdProfileUrl(userID, profileUrl string) (*domain.User, error) {
+	user, err := uc.repository.GetByID(userID)
+	if user == nil || err != nil {
+		return nil, err
+	}
+
+	user.Profile = profileUrl
+	field := "Profile"
 	user, err = uc.repository.UpdByID(field, user)
 	return user, err
 }
