@@ -4,6 +4,7 @@ import "time"
 
 type User struct {
 	ID       string    `json:"id"`
+	Profile  string    `json:"profile"` // profile url
 	Name     string    `json:"name"`
 	Chats    []string  `json:"chats"`   // []Chat.ID
 	Friends  []string  `json:"friends"` // []User.ID
@@ -14,6 +15,7 @@ type User struct {
 func NewUser(ID, name string, t time.Time) *User {
 	return &User{
 		ID:       ID,
+		Profile:  "",
 		Name:     name,
 		Chats:    []string{},
 		Friends:  []string{},
