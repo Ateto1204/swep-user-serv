@@ -174,6 +174,24 @@ func (h *UserHandler) RemoveNotif(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
+func (h *UserHandler) UpdProfileUrl(c *gin.Context) {
+	type Input struct {
+		UserID  string `json:"user_id"`
+		Profile string `json:"profile"`
+	}
+	var input Input
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	user, err := h.userUseCase.UpdProfileUrl(input.UserID, input.Profile)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, user)
+}
+
 func (h *UserHandler) Handle(c *gin.Context) {
 	c.JSON(http.StatusOK, "hello zeabur")
 }

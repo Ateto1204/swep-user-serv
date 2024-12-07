@@ -103,11 +103,13 @@ func parseToEntity(user *domain.User) (*entity.User, error) {
 	}
 	userEntity := &entity.User{
 		ID:       user.ID,
+		Profile:  user.Profile,
 		Name:     user.Name,
 		Chats:    chatsStr,
 		Friends:  friendsStr,
 		Notifs:   notifsStr,
 		CreateAt: user.CreateAt,
+		UpdateAt: user.UpdateAt,
 	}
 	return userEntity, nil
 }
@@ -127,11 +129,13 @@ func parseToModel(user *entity.User) (*domain.User, error) {
 	}
 	userModel := &domain.User{
 		ID:       user.ID,
+		Profile:  user.Profile,
 		Name:     user.Name,
 		Chats:    chatsData,
 		Friends:  friendsData,
 		Notifs:   notifsData,
 		CreateAt: user.CreateAt,
+		UpdateAt: user.UpdateAt,
 	}
 	return userModel, nil
 }
