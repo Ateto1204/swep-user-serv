@@ -10,6 +10,7 @@ type User struct {
 	Friends  []string  `json:"friends"` // []User.ID
 	Notifs   []string  `json:"notifs"`  // []Notification.ID
 	CreateAt time.Time `json:"create_at"`
+	UpdateAt time.Time `json:"update_at"`
 }
 
 func NewUser(ID, name string, t time.Time) *User {
@@ -21,5 +22,6 @@ func NewUser(ID, name string, t time.Time) *User {
 		Friends:  []string{},
 		Notifs:   []string{},
 		CreateAt: t,
+		UpdateAt: t,
 	}
 }

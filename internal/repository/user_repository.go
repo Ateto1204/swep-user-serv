@@ -109,6 +109,7 @@ func parseToEntity(user *domain.User) (*entity.User, error) {
 		Friends:  friendsStr,
 		Notifs:   notifsStr,
 		CreateAt: user.CreateAt,
+		UpdateAt: user.UpdateAt,
 	}
 	return userEntity, nil
 }
@@ -134,6 +135,7 @@ func parseToModel(user *entity.User) (*domain.User, error) {
 		Friends:  friendsData,
 		Notifs:   notifsData,
 		CreateAt: user.CreateAt,
+		UpdateAt: user.UpdateAt,
 	}
 	return userModel, nil
 }
