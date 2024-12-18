@@ -46,12 +46,22 @@ func (r *userRepository) GetByID(userID string) (*domain.User, error) {
 	}
 	userModel, err := parseToModel(userEntity)
 	if err != nil {
+		userEntity.Settings = "[]"
+		userModel, err = parseToModel(userEntity)
+		if err != nil {
+			return nil, err
+		}
+		field := "Settings"
+		if _, err := r.UpdByID(field, userModel); err != nil {
+			return nil, err
+		}
+
 		userEntity.Notifs = "[]"
 		userModel, err = parseToModel(userEntity)
 		if err != nil {
 			return nil, err
 		}
-		field := "Notifs"
+		field = "Notifs"
 		return r.UpdByID(field, userModel)
 	}
 	return userModel, err
@@ -101,6 +111,10 @@ func parseToEntity(user *domain.User) (*entity.User, error) {
 	if err != nil {
 		return nil, err
 	}
+	settingsStr, err := strSerialize(user.Settings)
+	if err != nil {
+		return nil, err
+	}
 	userEntity := &entity.User{
 		ID:       user.ID,
 		Profile:  user.Profile,
@@ -108,6 +122,7 @@ func parseToEntity(user *domain.User) (*entity.User, error) {
 		Chats:    chatsStr,
 		Friends:  friendsStr,
 		Notifs:   notifsStr,
+		Settings: settingsStr,
 		CreateAt: user.CreateAt,
 		UpdateAt: user.UpdateAt,
 	}
@@ -127,6 +142,10 @@ func parseToModel(user *entity.User) (*domain.User, error) {
 	if err != nil {
 		return nil, err
 	}
+	settingsData, err := strUnserialize(user.Settings)
+	if err != nil {
+		return nil, err
+	}
 	userModel := &domain.User{
 		ID:       user.ID,
 		Profile:  user.Profile,
@@ -134,6 +153,7 @@ func parseToModel(user *entity.User) (*domain.User, error) {
 		Chats:    chatsData,
 		Friends:  friendsData,
 		Notifs:   notifsData,
+		Settings: settingsData,
 		CreateAt: user.CreateAt,
 		UpdateAt: user.UpdateAt,
 	}
