@@ -6,6 +6,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/Ateto1204/swep-user-serv/internal/delivery/dto"
 	"github.com/Ateto1204/swep-user-serv/internal/domain"
 	"github.com/Ateto1204/swep-user-serv/internal/repository"
 )
@@ -21,6 +22,7 @@ type UserUseCase interface {
 	AddNewNotif(userID, notifID string) (*domain.User, error)
 	RemoveNotif(userID, notifID string) (*domain.User, error)
 	UpdProfileUrl(userID, profileUrl string) (*domain.User, error)
+	SaveSettings(settings dto.AccessSettingRequest) (*domain.User, error)
 }
 
 type userUseCase struct {
@@ -237,6 +239,21 @@ func (uc *userUseCase) UpdProfileUrl(userID, profileUrl string) (*domain.User, e
 	field := "Profile"
 	user, err = uc.repository.UpdByID(field, user)
 	return user, err
+}
+
+func (uc *userUseCase) SaveSettings(set dto.AccessSettingRequest) (*domain.User, error) {
+	user, err := uc.repository.GetByID(set.UserID)
+	if err != nil {
+		return nil, err
+	}
+	newSettings := []string{set.Alias, set.Birth, set.Gender, set.Telephone, set.Address, set.Text}
+	user.Settings = newSettings
+	field := "Settings"
+	user, err = uc.repository.UpdByID(field, user)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
 }
 
 func removeFromSlice(slice []string, target string) []string {

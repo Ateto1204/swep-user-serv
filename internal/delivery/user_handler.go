@@ -3,6 +3,7 @@ package delivery
 import (
 	"net/http"
 
+	"github.com/Ateto1204/swep-user-serv/internal/delivery/dto"
 	"github.com/Ateto1204/swep-user-serv/internal/usecase"
 	"github.com/gin-gonic/gin"
 )
@@ -16,11 +17,7 @@ func NewUserHandler(userUseCase usecase.UserUseCase) *UserHandler {
 }
 
 func (h *UserHandler) SaveUser(c *gin.Context) {
-	type Input struct {
-		ID   string `json:"id"`
-		Name string `json:"name"`
-	}
-	var input Input
+	var input dto.SaveUserRequest
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -34,10 +31,7 @@ func (h *UserHandler) SaveUser(c *gin.Context) {
 }
 
 func (h *UserHandler) GetUser(c *gin.Context) {
-	type Input struct {
-		ID string `json:"id"`
-	}
-	var input Input
+	var input dto.AccessUserRequest
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -51,10 +45,7 @@ func (h *UserHandler) GetUser(c *gin.Context) {
 }
 
 func (h *UserHandler) DeleteUser(c *gin.Context) {
-	type Input struct {
-		ID string `json:"id"`
-	}
-	var input Input
+	var input dto.AccessUserRequest
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -67,11 +58,7 @@ func (h *UserHandler) DeleteUser(c *gin.Context) {
 }
 
 func (h *UserHandler) AddNewFriend(c *gin.Context) {
-	type Input struct {
-		UserID   string `json:"user_id"`
-		FriendID string `json:"friend_id"`
-	}
-	var input Input
+	var input dto.AccessFriendRequest
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -85,11 +72,7 @@ func (h *UserHandler) AddNewFriend(c *gin.Context) {
 }
 
 func (h *UserHandler) RemoveFriend(c *gin.Context) {
-	type Input struct {
-		UserID   string `json:"user_id"`
-		FriendID string `json:"friend_id"`
-	}
-	var input Input
+	var input dto.AccessFriendRequest
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -103,11 +86,8 @@ func (h *UserHandler) RemoveFriend(c *gin.Context) {
 }
 
 func (h *UserHandler) AddNewChat(c *gin.Context) {
-	type Input struct {
-		UserID string `json:"user_id"`
-		ChatID string `json:"chat_id"`
-	}
-	var input Input
+
+	var input dto.AccessChatRequest
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -121,11 +101,7 @@ func (h *UserHandler) AddNewChat(c *gin.Context) {
 }
 
 func (h *UserHandler) RemoveChat(c *gin.Context) {
-	type Input struct {
-		UserID string `json:"user_id"`
-		ChatID string `json:"chat_id"`
-	}
-	var input Input
+	var input dto.AccessChatRequest
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -139,11 +115,7 @@ func (h *UserHandler) RemoveChat(c *gin.Context) {
 }
 
 func (h *UserHandler) AddNewNotif(c *gin.Context) {
-	type Input struct {
-		UserID  string `json:"user_id"`
-		NotifID string `json:"notif_id"`
-	}
-	var input Input
+	var input dto.AccessNotifRequest
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -157,11 +129,7 @@ func (h *UserHandler) AddNewNotif(c *gin.Context) {
 }
 
 func (h *UserHandler) RemoveNotif(c *gin.Context) {
-	type Input struct {
-		UserID  string `json:"user_id"`
-		NotifID string `json:"notif_id"`
-	}
-	var input Input
+	var input dto.AccessNotifRequest
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -175,16 +143,26 @@ func (h *UserHandler) RemoveNotif(c *gin.Context) {
 }
 
 func (h *UserHandler) UpdProfileUrl(c *gin.Context) {
-	type Input struct {
-		UserID  string `json:"user_id"`
-		Profile string `json:"profile"`
-	}
-	var input Input
+	var input dto.AccessProfileRequest
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	user, err := h.userUseCase.UpdProfileUrl(input.UserID, input.Profile)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, user)
+}
+
+func (h *UserHandler) SaveSettings(c *gin.Context) {
+	var input dto.AccessSettingRequest
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	user, err := h.userUseCase.SaveSettings(input)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
